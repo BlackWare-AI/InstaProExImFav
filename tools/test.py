@@ -1,5 +1,8 @@
 import sys,pathlib,os,json,subprocess,hashlib
 from build import ROOT,CACHE,B,run,javac
+settings_cp=os.pathsep.join(map(str,[B/'appclasses',CACHE/'apksig.jar']))
+javac(B/'settingstests',[ROOT/'tests/SettingsTest.java'],settings_cp)
+run('java','-cp',str(B/'settingstests')+os.pathsep+settings_cp,'dev.instapro.patcher.SettingsTest')
 if '--host-only' not in sys.argv:
  E=pathlib.Path(sys.argv[1]) if len(sys.argv)>1 else ROOT.parent/'instapro/original-evidence'
  for item in json.loads((E/'FILES.json').read_text()):

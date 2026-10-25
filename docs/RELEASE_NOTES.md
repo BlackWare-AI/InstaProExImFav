@@ -1,9 +1,14 @@
-İmzalı **release** patcher adayıdır; `android:debuggable=false`. Yaklaşık 1,21 MB. Android üzerinde test edilmedi.
+## 0.1.1 düzeltmesi
 
-Kaynak/inceleme: PR #1. Build workflow ve Türkçe test/teşhis belgeleri kaynaklarda bulunur. APK imzası ve release manifesti, AXML/DEX/ARSC kontrolleri ve sentetik favori SQLite testleri geçti. Bu kontroller Android açılış testi değildir.
+- `gpt` ve `.gpt` kabul edilir; baştaki nokta zorunlu değil.
+- Paket eki isteğe bağlı. Boş bırakıldığında `com.instagram.android`, authority/izin/process kimlikleri ve kaynak tablosu korunur.
+- Aynı paket seçildiğinde farklı imzalı mevcut kurulumun üzerine güncelleme yapılamayacağı formda belirtilir. Patcher hiçbir uygulamayı kaldırmaz.
+- Kalıcı alan etiketleri ve canlı paket önizlemesi; APK doğrulama/işlem durumu; tam siyah pencere/kaydırma zemini. Modla ve kaydet, kaynak APK doğrulanınca etkinleşir; İptal yalnız işlem sırasında görünür.
 
-**Eksikler:** Tam orijinal InstaPro APK’si henüz sağlanmadığından telefonda uçtan uca patch üretimi yapılmadı ve bu oturumda hedef InstaPro APK’si üretilmedi. Önceki açılış çökmesinin nedeni bilinmiyor; logcat/native kayıt gerekiyor. Gerçek kullanıcı JSON’u da bu oturumda test edilmedi. Uygun ARM64 cihazda orijinal → paket/ad baseline → Activity → hook aşamalarıyla test gereklidir.
+İmzalı **release** patcher, versionCode 2; önceki patcher ile aynı sertifika. Önceki patcher kaldırılmadan güncelleme için hazırlanmıştır. Patcher ve hedef çıktı için `android:debuggable=false` kuralı korunur.
 
-Patcher yalnız SHA-256 ile sabitlenmiş orijinal 15.85 profilini kabul eder. Her iki APK’de debug=false kuralı vardır. Telefonda oluşacak hedef imzası kalıcıdır; patcher kaldırılmadan önce parolalı anahtar yedeği alınmalıdır. Önceki denemenin imza anahtarı bulunmaz. Patcher’ın dağıtım özel anahtarı GitHub’a eklenmedi; CI imza secrets henüz kurulmadı.
+Ek normalizasyonu, orijinal manifest kimliklerini koruma, AXML/DEX/ARSC, anahtar roundtrip ve sentetik favori SQLite testleri geçti. Bu kontroller Android testi değildir. Bu yeni adayın UI/güncelleme kurulumu/telefonda uçtan uca modlama ve hedef açılışı geliştirme ortamında test edilemedi. Kullanıcının önceki sürüm ekran görüntüsü `gpt` doğrulama engelini gösteriyor; bu hata düzeltildi, başka bir runtime arızasının çözüldüğü ileri sürülmüyor.
 
-APK SHA-256: `745738d68dfee50bfbbbdedad4abb0d0d85287fa25f78d17714baab89396c7e7`
+Tam orijinal APK ve uygun Android cihazı hâlâ bu ortama sağlanmadı; hedef InstaPro APK’si bu oturumda üretilmedi. Önceki hedef açılış çökmesinin nedeni bilinmiyor. Patcher yalnız sabitlenmiş orijinal 15.85 profilini kabul eder. Kaynaklar ve tüm test sınırları PR #1 / docs/TEST_REPORT_TR.md içinde.
+
+APK SHA-256: `7704163273d62031d76babae2fd7c262e9ea1a1849385c0a04753884c77cf96e`

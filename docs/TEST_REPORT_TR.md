@@ -1,6 +1,12 @@
-# Test ve teslim durumu — 25 Ekim 2026
+# Test ve teslim durumu — 0.1.1 adayı, 25 Ekim 2026
 
 Bu teslim **deneysel release adayıdır**. Patcher uygulaması geliştirildi ve imzalı release APK üretildi. Tam hedef APK henüz sağlanmadığından bu oturumda imzalı InstaPro çıktı APK’si üretilemedi. Önceki açılış çökmesinin nedeni **bilinmiyor**; logcat/native crash kaydı bulunmuyor.
+
+## Kullanıcı bildirimi ve bu düzeltmenin sınırı
+
+Önceki adayın kullanıcı ekran görüntüsünde `gpt` girişi, baştaki nokta zorunlu tutulduğu için reddediliyordu. Bu, kaydetme akışına ulaşmadan oluşan doğrulama hatasıdır. Ekran görüntüsü uçtan uca APK üretiminin çalıştığını veya başka bir arızanın nedenini göstermez. Bu sürüm noktasız eki kabul eder ve ek zorunluluğunu kaldırır. Boş ek orijinal paket/kimlikleri/kaynak tablosunu korur. Form etiketleri, paket önizlemesi, tam siyah pencere ve ScrollView fillViewport, doğrulanmış kaynak ve işlem durumu düzenlendi. UI değişiklikleri Android’de görüntülenerek test edilmedi.
+
+Aynı paket seçildiğinde yeni imza, farklı imzalı mevcut uygulamanın üzerine güncellemeye izin vermez; bu bilgi formda gösterilir. Patcher orijinal uygulamayı kaldırmaz.
 
 ## Yapılan kontroller
 
@@ -13,6 +19,8 @@ Ortam: Linux x86_64, OpenJDK 21.0.12.1. Android cihaz modeli/Android sürümü/A
 | Native şema çözümü | ELF PT_LOAD ile VA→dosya offseti çevrildi; favorites.db, üç CREATE TABLE ve Favorites seed yeniden çözüldü |
 | Envanter | 43.772 ZIP girdisi; 297.878.696 bayt açılmış içerik. Tam APK arşivde yok |
 | AXML bağımsız parser | apksig parser ile 734 component android:name resource-ID kontrolü, yeni Activity ve debug=false geçti |
+| Ek doğrulama regresyonu | `gpt`/`.gpt` eşdeğer; boş/boşluk ek orijinal paket; bozuk girişler reddedildi. Bu kontrol CI host testine de eklendi |
+| Orijinal paket yolu | Özgün manifest ile paket, authority, özel izin referansları, process/taskAffinity değerleri eşleşti; resource-map ve debug=false kontrolleri geçti. Bu yolda resources.arsc değiştirilmeden kopyalanır |
 | AXML roundtrip/baseline | Unicode/emoji label ve `.gpt`; yeni Activity olmadan baseline manifest kontrolü geçti |
 | resources.arsc | Yalnız sabit boyutlu paket adı alanı değişti; diğer paketlenmiş kaynak baytları korundu |
 | DEX karşılaştırması | Özgün classes20 üzerinde yalnız iki native initPreference gövdesi değişti; diğer metot gövdeleri/flags korundu; GOLD stub dışarıda |
@@ -22,6 +30,7 @@ Ortam: Linux x86_64, OpenJDK 21.0.12.1. Android cihaz modeli/Android sürümü/A
 | Favori SQLite | **Sentetik** 16.932 kullanıcı / 8 klasör / 17.615 üyelik: replace, tekrar merge ve JSON→SQLite→JSON→yeni SQLite alan/ilişki karşılaştırması geçti |
 | Veri koruma | Sentetik testte yedek callback hatası ve ortada yazma hatasında rollback; Unicode, boş klasör, case dedup; bozuk/ilgisiz JSON ve iç string’de trailing garbage reddi geçti |
 | Release derleme | Patcher D8 `--release`, min API 28; obfuscation/shrinking bilinçli kapalı; açık debuggable=false |
+| Patcher güncelleme kimliği | versionCode 2 / versionName 0.1.1, önceki dağıtımla aynı sertifika. Gerçek Android update kurulumu test edilmedi |
 | Release imza | apksig API 28–36 aralığı doğrulaması geçti; seçilen v3 şeması doğrulandı. v2/v3 imzalama etkin; verifier’ın v2=false raporu tek başına geçersizlik değildir |
 
 Sentetik workload, kullanıcının bulunmayan gerçek JSON yedeği değildir. Önceki oturumun gerçek yedek testleri burada tekrar yapılmış sayılmadı.

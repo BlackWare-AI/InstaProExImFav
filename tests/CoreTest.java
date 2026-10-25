@@ -28,10 +28,27 @@ public class CoreTest {
   TreeMap<String,String> props=new TreeMap<>();for(java.lang.reflect.Method m:value.getClass().getMethods())if(m.getName().startsWith("get")&&!m.getName().equals("getClass")&&m.getParameterCount()==0){m.setAccessible(true);props.put(m.getName(),canonical(m.invoke(value)));}return props.toString();
  }
  static String body(Method m)throws Exception{MethodImplementation impl=m.getImplementation();return impl==null?"native/abstract":impl.getRegisterCount()+":"+canonical(impl.getInstructions())+":"+canonical(impl.getTryBlocks())+":"+canonical(impl.getDebugItems());}
+ static List<String> identities(byte[] data)throws Exception{
+  BinaryXml x=new BinaryXml(data);List<String> values=new ArrayList<>();
+  for(byte[] c:x.chunks)if(BinaryXml.u16(c,0)==0x102){
+   String tag=x.tag(c);
+   for(int p:x.attrs(c)){
+    int id=x.id(c,p);String key=x.strings.get(BinaryXml.i32(c,p+4));
+    if(tag.equals("manifest")&&key.equals("package")||id==0x01010018||id==0x01010011||id==0x01010012||id==0x01010006||id==0x01010007||id==0x01010008||id==0x01010003&&(tag.equals("permission")||tag.startsWith("uses-permission")))
+     values.add(tag+":"+key+":"+x.text(c,p));
+   }
+  }
+  return values;
+ }
  public static void main(String[] args)throws Exception{
   Path evidence=Paths.get(args[0]),build=Paths.get(args[1]);String pkg="com.instagram.android.gpt";
   BinaryXml x=new BinaryXml(bytes(evidence.resolve("AndroidManifest.xml")));x.patch(pkg,"İnsta 🖤 GPT",true);byte[] patched=x.bytes();PatchEngine.verifyManifest(patched,pkg,true);manifest(patched);check(Arrays.equals(patched,new BinaryXml(patched).bytes()),"AXML roundtrip");Files.write(build.resolve("manifest-test.axml"),patched);
   BinaryXml baseline=new BinaryXml(bytes(evidence.resolve("AndroidManifest.xml")));baseline.patch(pkg,"InstaPro GPT",false);PatchEngine.verifyManifest(baseline.bytes(),pkg,false);
+  byte[] originalManifest=bytes(evidence.resolve("AndroidManifest.xml"));
+  BinaryXml samePackage=new BinaryXml(originalManifest);samePackage.patch(PatchEngine.packageName(""),"InstaPro",true);
+  byte[] same=samePackage.bytes();PatchEngine.verifyManifest(same,PatchEngine.ORIGINAL_PACKAGE,true);manifest(same);
+  check(identities(originalManifest).equals(identities(same)),"empty suffix changed original package/authority/permission/process identity");
+  System.out.println("PASS empty suffix: original package, authorities, permission references and process/task identities preserved");
   byte[] old=bytes(evidence.resolve("resources.arsc")),arsc=BinaryXml.resources(old,pkg);int changed=0;for(int i=0;i<old.length;i++)if(old[i]!=arsc[i])changed++;check(arsc.length==old.length&&changed<256,"resource corruption");System.out.println("PASS ARSC fixed package field only; packed resources preserved");
   byte[] dex=bytes(evidence.resolve("classes20.dex"));byte[] result=DexPatch.patch(dex,bytes(build.resolve("payloaddex/classes.dex")));Files.write(build.resolve("classes20-test.dex"),result);
   DexBackedDexFile a=new DexBackedDexFile(Opcodes.forApi(28),dex),b=new DexBackedDexFile(Opcodes.forApi(28),result);Map<String,ClassDef> before=new HashMap<>();for(ClassDef c:a.getClasses())before.put(c.getType(),c);int methods=0,newClasses=0;
@@ -44,7 +61,7 @@ public class CoreTest {
   System.out.println("PASS diagnostic DEX stages: Activity payload without hooks, then exactly one hook");
   File keyDir=Files.createTempDirectory("instapro-key-test").toFile();SigningKeys keys=new SigningKeys(keyDir);KeyStore ks=keys.load();byte[] cert=ks.getCertificate("patcher").getEncoded();check(Arrays.equals(cert,keys.load().getCertificate("patcher").getEncoded()),"identity changed");ByteArrayOutputStream out=new ByteArrayOutputStream();char[] pass="test-only-strong-password".toCharArray();keys.exportTo(out,pass);keys.importFrom(new ByteArrayInputStream(out.toByteArray()),pass);check(Arrays.equals(cert,keys.load().getCertificate("patcher").getEncoded()),"portable identity changed");try{keys.importFrom(new ByteArrayInputStream(out.toByteArray()),"incorrect-pass".toCharArray());throw new AssertionError("wrong password accepted");}catch(IOException expected){}check(Arrays.equals(cert,keys.load().getCertificate("patcher").getEncoded()),"failed import replaced key");keys.file.delete();keys.secretFile.delete();keyDir.delete();
   System.out.println("PASS signing identity persistence, password-protected portable roundtrip, wrong-password safety");
-  for(String suffix:new String[]{"", ".", ".1bad", "gpt", ".bad-x", ".a;evil"}){try{PatchEngine.checkSettings("Name",suffix);throw new AssertionError("invalid suffix accepted");}catch(IOException expected){}}
+  for(String suffix:new String[]{".", ".1bad", ".bad-x", ".a;evil"}){try{PatchEngine.checkSettings("Name",suffix);throw new AssertionError("invalid suffix accepted");}catch(IOException expected){}}
   PatchEngine.checkSettings("İnsta 🖤", ".gpt");System.out.println("ALL CORE TESTS PASSED (host only, no Android launch)");
  }
 }

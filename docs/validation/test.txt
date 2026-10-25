@@ -1,3 +1,9 @@
+warning: [options] bootstrap class path not set in conjunction with -source 8
+warning: [options] source value 8 is obsolete and will be removed in a future release
+warning: [options] target value 8 is obsolete and will be removed in a future release
+warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.
+4 warnings
+PASS suffix regression: gpt/.gpt equivalent; blank/whitespace keep original package; malformed suffixes rejected
 PASS evidence hash/size checks
 warning: [options] bootstrap class path not set in conjunction with -source 8
 warning: [options] source value 8 is obsolete and will be removed in a future release
@@ -5,6 +11,8 @@ warning: [options] target value 8 is obsolete and will be removed in a future re
 warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.
 4 warnings
 PASS independent apksig AXML parser: 734 component names, new Activity, debug=false
+PASS independent apksig AXML parser: 734 component names, new Activity, debug=false
+PASS empty suffix: original package, authorities, permission references and process/task identities preserved
 PASS ARSC fixed package field only; packed resources preserved
 PASS DEX: exactly two native init methods replaced; original click/lifecycle preserved; GOLD stub excluded
 PASS diagnostic DEX stages: Activity payload without hooks, then exactly one hook

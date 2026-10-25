@@ -17,4 +17,4 @@ warning: [options] To suppress warnings about obsolete options, use -Xlint:-opti
 Note: Some input files use or override a deprecated API.
 Note: Recompile with -Xlint:deprecation for details.
 4 warnings
-Unsigned release: /workspace/instapro-patcher/build/patcher-unsigned.apk
+Unsigned release: /workspace/instapro-repo/build/patcher-unsigned.apk

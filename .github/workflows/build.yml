@@ -59,9 +59,9 @@ jobs:
           GH_REPO: ${{ github.repository }}
         run: |
           (cd artifacts && sha256sum --check SHA256SUMS.txt)
-          if gh release view v0.1.0-rc1 > /dev/null 2>&1; then
-            gh release upload v0.1.0-rc1 artifacts/InstaPro-Patcher-release.apk artifacts/SHA256SUMS.txt docs/RELEASE_ARTIFACT.json docs/TEST_REPORT_TR.md --clobber
-            gh release edit v0.1.0-rc1 --draft=false --prerelease --notes-file docs/RELEASE_NOTES.md
+          if gh release view v0.1.1-rc1 > /dev/null 2>&1; then
+            gh release upload v0.1.1-rc1 artifacts/InstaPro-Patcher-release.apk artifacts/SHA256SUMS.txt docs/RELEASE_ARTIFACT.json docs/TEST_REPORT_TR.md --clobber
+            gh release edit v0.1.1-rc1 --draft=false --prerelease --notes-file docs/RELEASE_NOTES.md
           else
-          gh release create v0.1.0-rc1 artifacts/InstaPro-Patcher-release.apk artifacts/SHA256SUMS.txt docs/RELEASE_ARTIFACT.json docs/TEST_REPORT_TR.md --target "$GITHUB_SHA" --prerelease --title "v0.1.0-rc1 — Release build; Android validation pending" --notes-file docs/RELEASE_NOTES.md
+          gh release create v0.1.1-rc1 artifacts/InstaPro-Patcher-release.apk artifacts/SHA256SUMS.txt docs/RELEASE_ARTIFACT.json docs/TEST_REPORT_TR.md --target "$GITHUB_SHA" --prerelease --title "v0.1.1-rc1 — Release build; Android validation pending" --notes-file docs/RELEASE_NOTES.md
           fi

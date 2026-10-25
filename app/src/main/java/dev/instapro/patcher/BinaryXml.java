@@ -29,6 +29,7 @@ public final class BinaryXml {
  void value(byte[] c,int p,String s){int i=sid(s);put(c,p+8,i);c[p+15]=3;put(c,p+16,i);}
  String tag(byte[] c){return strings.get(i32(c,20));}
  public void patch(String pkg,String label, boolean activity) throws IOException {
+  boolean clone=!pkg.equals(PatchEngine.ORIGINAL_PACKAGE);
   Set<String> permissions=new HashSet<>();
   for(byte[] c:chunks)if(u16(c,0)==0x102&&tag(c).equals("permission"))for(int p:attrs(c))if(id(c,p)==0x01010003){String s=text(c,p);if(s!=null)permissions.add(s);}
   boolean app=false,debug=false;
@@ -37,7 +38,7 @@ public final class BinaryXml {
     if(tag.equals("manifest")&&key.equals("package")){if(!"com.instagram.android".equals(s))throw new IOException("Kaynak paket uyumsuz");value(c,p,pkg);}
     if(tag.equals("application")){app=true;if(id==0x0101000f){put(c,p+8,NONE);c[p+15]=0x12;put(c,p+16,0);debug=true;}}
     if(id==0x01010001&&(tag.equals("application")||tag.equals("activity")||tag.equals("activity-alias")))value(c,p,label);
-    if(s==null)continue;
+    if(s==null||!clone)continue;
     if(id==0x01010018)value(c,p,joinAuthorities(s,pkg.substring("com.instagram.android".length())));
     else if((id==0x01010003&&(tag.equals("permission")||tag.startsWith("uses-permission")))||id==0x01010006||id==0x01010007||id==0x01010008){if(s.startsWith("com.instagram.android."))value(c,p,pkg+s.substring(21));else if(s.startsWith(".")&&permissions.contains(s))value(c,p,pkg+s);}
     else if((id==0x01010012||id==0x01010011)&&s.startsWith("com.instagram.android"))value(c,p,pkg+s.substring(21));

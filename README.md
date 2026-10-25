@@ -1,8 +1,12 @@
 # InstaPro Patcher
 
-Telefonda çevrimdışı çalışan sade APK patcher. AMOLED siyah arayüz: kaynak APK seçimi, görünen ad, paket eki (varsayılan `.gpt`), **Modla ve kaydet**. Kullanıcı APK’si ve favorileri ağa gönderilmez; uygulama INTERNET izni istemez.
+Telefonda çevrimdışı çalışan sade APK patcher. AMOLED siyah arayüz: kaynak APK seçimi, görünen ad, isteğe bağlı paket eki (varsayılan `.gpt`), **Modla ve kaydet**. Kullanıcı APK’si ve favorileri ağa gönderilmez; uygulama INTERNET izni istemez.
 
 **Durum: deneysel release adayı. Android üzerinde çalıştığı henüz doğrulanmadı. Önceki APK’nin açılış çökmesinin nedeni bilinmiyor.** İmzalı release, derleme ve masaüstü testleri Android açılış testi değildir. [Test raporu](docs/TEST_REPORT_TR.md).
+
+## 0.1.1 düzeltmesi
+
+Ekran görüntüsündeki `gpt` girişinin reddedilmesi düzeltildi. Nokta isteğe bağlı; ek alanı da isteğe bağlı. Görünür alan etiketleri, canlı paket önizlemesi, doğrulanmış kaynak göstergesi ve işlem durumları eklendi. Pencere/kaydırma arka planı siyah ve ekran yüksekliğini doldurur. Modlama düğmesi kaynak APK doğrulanınca etkinleşir; İptal yalnız işlem sırasında görünür. 0.1.1 adayı aynı dağıtım anahtarı ve versionCode 2 ile önceki patcher’ın üzerine kurulabilir. Android’de bu yeni adayın UI ve tam modlama akışı henüz test edilmedi.
 
 ## Kapsam
 
@@ -12,7 +16,7 @@ Yalnız şu orijinal profil kabul edilir:
 - Boyut `180564084` bayt.
 - SHA-256 `eeb7b8598b3cb2718bf3cf4c293e854e910e159e103ba9ccc0225dc4168e064e`.
 
-Diğer sürümler ve zaten patch uygulanmış APK’ler reddedilir. Manifest ve resources.arsc paket adı değiştirilir; authority, özel izin referansları, process/taskAffinity ayrılır. Java/JNI sınıf adları korunur. Paket eki yeni veri alanı oluşturur; orijinal uygulamanın oturumu veya özel verisi devralınmaz.
+Diğer sürümler ve zaten patch uygulanmış APK’ler reddedilir. `gpt` ve `.gpt` eşdeğerdir. Paket eki boş bırakılırsa `com.instagram.android`, authority/izin/process kimlikleri ve resources.arsc korunur; klon oluşturulmaz. Ek girilirse manifest ve resources.arsc paket adı değiştirilir; authority, özel izin referansları, process/taskAffinity ayrılır. Java/JNI sınıf adları korunur. Ek girildiğinde yeni veri alanı oluşur; orijinal uygulamanın oturumu veya özel verisi devralınmaz. Boş ekle aynı paket korunabilir; ancak yeniden imzalanan APK, farklı imzalı mevcut kurulumun üzerine yüklenemez. Patcher mevcut uygulamayı kaldırmaz veya onun verilerine dokunmaz.
 
 Mevcut Backup ekranının normal iki satırı **Import favorites / Export favorites** olur. Satır layout’u ve dört gelişmiş işlem korunur. Yalnız iki `initPreference` metodu managed koda geçirilir. Orijinal native `onPreferenceClick`, lifecycle, constructor ve native kütüphaneler korunur. Bu sınırın gerçek Android davranışı ayrıca sınanmalıdır.
 

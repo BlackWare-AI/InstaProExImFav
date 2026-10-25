@@ -8,18 +8,33 @@ import com.android.apksig.*;
 public final class PatchEngine {
  public static final String SOURCE_SHA="eeb7b8598b3cb2718bf3cf4c293e854e910e159e103ba9ccc0225dc4168e064e";
  public interface Progress {void show(String s);}
- public static void checkSettings(String label,String suffix)throws IOException{if(label==null||label.trim().isEmpty()||label.length()>80||label.chars().anyMatch(c->Character.isISOControl(c)))throw new IOException("Uygulama adı geçersiz");if(suffix==null||!suffix.matches("(?:\\.[a-z][a-z0-9_]{0,39})+")||suffix.length()>80)throw new IOException("Paket eki .gpt biçiminde olmalı");}
+ public static final String ORIGINAL_PACKAGE="com.instagram.android";
+ public static String normalizeSuffix(String input)throws IOException{
+  if(input==null)throw new IOException("Paket eki okunamadı");
+  String suffix=input.trim();
+  if(suffix.isEmpty())return "";
+  if(!suffix.startsWith("."))suffix="."+suffix;
+  if(!suffix.matches("(?:\\.[A-Za-z][A-Za-z0-9_]{0,39})+")||suffix.length()>80)
+   throw new IOException("Geçersiz paket eki. Örnek: gpt. Orijinal paketi korumak için boş bırakın.");
+  return suffix;
+ }
+ public static String packageName(String suffix)throws IOException{return ORIGINAL_PACKAGE+normalizeSuffix(suffix);}
+ public static void checkSettings(String label,String suffix)throws IOException{
+  if(label==null||label.trim().isEmpty()||label.length()>80||label.chars().anyMatch(c->Character.isISOControl(c)))throw new IOException("Uygulama adı geçersiz");
+  normalizeSuffix(suffix);
+ }
  public static String sha(File f)throws Exception{MessageDigest md=MessageDigest.getInstance("SHA-256");try(InputStream in=new FileInputStream(f)){byte[] b=new byte[65536];for(int n;(n=in.read(b))!=-1;){cancelled();md.update(b,0,n);}}StringBuilder s=new StringBuilder();for(byte b:md.digest())s.append(String.format(Locale.ROOT,"%02x",b&255));return s.toString();}
  static void cancelled()throws IOException{if(Thread.currentThread().isInterrupted())throw new InterruptedIOException("İptal edildi");}
  public static void copy(InputStream in,OutputStream out,long limit)throws IOException{byte[] b=new byte[65536];long total=0;for(int n;(n=in.read(b))!=-1;){cancelled();total+=n;if(total>limit)throw new IOException("Dosya boyutu sınırı aşıldı");out.write(b,0,n);}}
  static byte[] read(ZipFile zip,String name,int max)throws IOException{ZipEntry e=zip.getEntry(name);if(e==null||e.getSize()<0||e.getSize()>max)throw new IOException("Eksik/büyük giriş: "+name);ByteArrayOutputStream out=new ByteArrayOutputStream();try(InputStream in=zip.getInputStream(e)){copy(in,out,max);}return out.toByteArray();}
  public static void build(File source,File output,byte[] payload,String label,String suffix,KeyStore keys,char[] keyPassword,Progress progress,int stage)throws Exception{
-  if(stage<0||stage>3)throw new IOException("Geçersiz aşama");checkSettings(label,suffix);String pkg="com.instagram.android"+suffix;
+  if(stage<0||stage>3)throw new IOException("Geçersiz aşama");checkSettings(label,suffix);String pkg=packageName(suffix);
   if(source.length()!=180564084L||!sha(source).equals(SOURCE_SHA))throw new IOException("Desteklenmeyen APK. Yalnız orijinal InstaPro 15.85 profili kabul edilir; zaten modlanmış dosya da reddedilir.");
   File unsigned=new File(output.getParentFile(),"unsigned.tmp.apk");boolean ok=false;
   try(ZipFile zip=new ZipFile(source)){
    Set<String> names=new HashSet<>();long size=0;for(Enumeration<? extends ZipEntry> es=zip.entries();es.hasMoreElements();){ZipEntry e=es.nextElement();String n=e.getName();if(!names.add(n)||n.startsWith("/")||n.contains("\\")||Arrays.asList(n.split("/")).contains("..")||e.getSize()<0||e.getSize()>300_000_000L)throw new IOException("Güvensiz ZIP girişi");size+=e.getSize();if(names.size()>100000||size>1_200_000_000L)throw new IOException("ZIP sınırı");}
-   progress.show("Manifest ve kaynak paketi düzenleniyor…");Map<String,byte[]> changed=new HashMap<>();BinaryXml xml=new BinaryXml(read(zip,"AndroidManifest.xml",2_000_000));xml.patch(pkg,label,stage>0);changed.put("AndroidManifest.xml",xml.bytes());changed.put("resources.arsc",BinaryXml.resources(read(zip,"resources.arsc",20_000_000),pkg));
+   progress.show("Manifest ve kaynak paketi düzenleniyor…");Map<String,byte[]> changed=new HashMap<>();BinaryXml xml=new BinaryXml(read(zip,"AndroidManifest.xml",2_000_000));xml.patch(pkg,label,stage>0);changed.put("AndroidManifest.xml",xml.bytes());
+   if(!pkg.equals(ORIGINAL_PACKAGE))changed.put("resources.arsc",BinaryXml.resources(read(zip,"resources.arsc",20_000_000),pkg));
    if(stage>0){progress.show("Favori menüsü ekleniyor…");changed.put("classes20.dex",DexPatch.patch(read(zip,"classes20.dex",4_000_000),payload,Math.max(0,stage-1)));}
    progress.show("Paketleniyor ve hizalanıyor…");
    try(CountOutput counter=new CountOutput(new FileOutputStream(unsigned));ZipOutputStream out=new ZipOutputStream(counter)){
