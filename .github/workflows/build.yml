@@ -7,6 +7,8 @@ permissions:
   contents: read
 jobs:
   build:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -47,3 +49,11 @@ jobs:
           name: signed-release-if-identity-configured
           path: build/InstaPro-Patcher-release.apk
           if-no-files-found: ignore
+      - name: Publish the validated signed candidate on repository branch pushes
+        if: github.event_name == 'push' && github.ref == 'refs/heads/codex/instapro-patcher-release-candidate' && hashFiles('artifacts/InstaPro-Patcher-release.apk') != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          (cd artifacts && sha256sum --check SHA256SUMS.txt)
+          gh release create v0.1.0-rc1 artifacts/InstaPro-Patcher-release.apk artifacts/SHA256SUMS.txt docs/RELEASE_ARTIFACT.json docs/TEST_REPORT_TR.md --target "$GITHUB_SHA" --prerelease --title "v0.1.0-rc1 — Release build; Android validation pending" --notes-file docs/RELEASE_NOTES.md

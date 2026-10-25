@@ -18,6 +18,8 @@ Mevcut Backup ekranının normal iki satırı **Import favorites / Export favori
 
 Import; önizleme, Birleştir/Listeyi değiştir, değiştirmede ek onay ve transaction içinde yazmadan önce otomatik yedek içerir. Export Android dosya seçicisiyle JSON üretir. İç yedekler aktarım ekranından dışarı alınabilir. İlişkiler ve boş klasörler korunur. Replace, yalnız içe alınan kategorileri bırakır; fazladan `Favorites` eklemez. Tarihsiz eski kayıtlar ilk görülme sırasına göre `import-zamanı - sıra` milisaniyesi alır; export/roundtrip bu tarihi korur. Profil görsellerinin URL metni taşınır, görsel dosyası indirilmez. INSFAV/Plus parser uyumluluğu doğrulanmadı.
 
+İmzalı aday APK ve hash dosyası `artifacts/` altında da bulunur; özel imza anahtarı içermez. GitHub Actions yalnız bu geliştirme dalının push olayında hash’i denetleyip ön sürüm ekini yayımlar.
+
 ## Release ve imza
 
 Patcher ve hedef APK açıkça **`android:debuggable=false`** kullanır. D8 `--release`, min API 28. Obfuscation/resource shrinking bu ilk adayda kapalıdır; runtime kod aktarımını cihazda doğrulamadan minify açılmaz. Bu bir debug varyantı değildir.

@@ -9,3 +9,4 @@ __pycache__/
 *.log
 local-evidence/
 crash-logs/
+!artifacts/InstaPro-Patcher-release.apk
