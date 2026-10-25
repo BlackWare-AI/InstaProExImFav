@@ -1,15 +1,24 @@
 {
   "name": "InstaPro-Patcher-release.apk",
-  "version_name": "0.1.1",
-  "version_code": 2,
-  "release_tag": "v0.1.1-rc1",
-  "bytes": 1216864,
-  "sha256": "7704163273d62031d76babae2fd7c262e9ea1a1849385c0a04753884c77cf96e",
+  "version_name": "0.1.2-diagnostic",
+  "version_code": 3,
+  "release_tag": "v0.1.2-diagnostic1",
+  "bytes": 1220960,
+  "sha256": "411688df3bce2620fef0ee264e1ba17aa8526e5b16246fb6d2f61fab736a2add",
   "certificate_sha256": "45dc5680343667bed714d6810cd793e4a234b8bfbc211c980893256f52e019aa",
   "same_certificate_as_previous_patcher": true,
   "debuggable": false,
   "build": "release",
-  "android_runtime_tested": false,
+  "android_runtime_tested": true,
+  "android_test_environment": {
+    "kind": "software emulator",
+    "release": "11",
+    "api": 30,
+    "abi": "x86_64",
+    "cold_starts": 3,
+    "ui_and_recovery_instrumentation": "passed; recovery fault is synthetic"
+  },
+  "user_phone_crash_diagnosed": false,
   "target_instapro_apk_generated": false,
   "source_apk_available": false
 }

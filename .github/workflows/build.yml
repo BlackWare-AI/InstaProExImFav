@@ -1,4 +1,4 @@
-name: Release build and host checks
+name: Release build and Android checks
 on:
   push:
   pull_request:
@@ -10,8 +10,6 @@ permissions:
   contents: read
 jobs:
   build:
-    permissions:
-      contents: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,44 +22,55 @@ jobs:
           python-version: '3.12'
       - run: python tools/build.py
       - run: python tools/test.py --host-only
-      - name: Upload unsigned release and host report inputs
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
-          name: unsigned-release-no-android-validation
+          name: unsigned-release-host-checked
           path: |
             build/patcher-unsigned.apk
             build/payloaddex/classes.dex
-      - name: Sign with persistent release identity when configured
-        env:
-          KEY_B64: ${{ secrets.PATCHER_RELEASE_KEYSTORE_B64 }}
-          KEY_PASS: ${{ secrets.PATCHER_RELEASE_PASSWORD }}
-          PATCHER_RELEASE_ALIAS: patcher-release
-        shell: bash
-        run: |
-          if [ -n "$KEY_B64" ] && [ -n "$KEY_PASS" ]; then
-            umask 077
-            export PATCHER_RELEASE_KEYSTORE="$RUNNER_TEMP/release.p12"
-            export PATCHER_RELEASE_PASSWORD_FILE="$RUNNER_TEMP/release-password"
-            printf '%s' "$KEY_B64" | base64 --decode > "$PATCHER_RELEASE_KEYSTORE"
-            printf '%s' "$KEY_PASS" > "$PATCHER_RELEASE_PASSWORD_FILE"
-            python tools/sign_release.py
-            rm -f "$PATCHER_RELEASE_KEYSTORE" "$PATCHER_RELEASE_PASSWORD_FILE"
-          fi
-      - uses: actions/upload-artifact@v4
+  android-startup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
         with:
-          name: signed-release-if-identity-configured
-          path: build/InstaPro-Patcher-release.apk
-          if-no-files-found: ignore
-      - name: Publish the validated signed candidate on repository branch pushes
-        if: github.event_name == 'push' && github.ref == 'refs/heads/codex/instapro-patcher-release-candidate' && hashFiles('artifacts/InstaPro-Patcher-release.apk') != ''
-        env:
+          distribution: temurin
+          java-version: '21'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Enable emulator acceleration
+        run: sudo chmod a+rw /dev/kvm
+      - uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 30
+          arch: x86_64
+          target: default
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
+          script: python tools/android_smoke.py --apk artifacts/InstaPro-Patcher-release.apk --serial emulator-5554 --out build/android-smoke
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: android-release-startup-evidence
+          path: build/android-smoke/
+  publish:
+    needs: [build, android-startup]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/codex/instapro-patcher-release-candidate'
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: |
           (cd artifacts && sha256sum --check SHA256SUMS.txt)
-          if gh release view v0.1.1-rc1 > /dev/null 2>&1; then
-            gh release upload v0.1.1-rc1 artifacts/InstaPro-Patcher-release.apk artifacts/SHA256SUMS.txt docs/RELEASE_ARTIFACT.json docs/TEST_REPORT_TR.md --clobber
-            gh release edit v0.1.1-rc1 --draft=false --prerelease --notes-file docs/RELEASE_NOTES.md
+          if gh release view v0.1.2-diagnostic1 > /dev/null 2>&1; then
+            gh release upload v0.1.2-diagnostic1 artifacts/InstaPro-Patcher-release.apk artifacts/SHA256SUMS.txt docs/RELEASE_ARTIFACT.json docs/TEST_REPORT_TR.md --clobber
+            gh release edit v0.1.2-diagnostic1 --draft=false --prerelease --notes-file docs/RELEASE_NOTES.md
           else
-          gh release create v0.1.1-rc1 artifacts/InstaPro-Patcher-release.apk artifacts/SHA256SUMS.txt docs/RELEASE_ARTIFACT.json docs/TEST_REPORT_TR.md --target "$GITHUB_SHA" --prerelease --title "v0.1.1-rc1 — Release build; Android validation pending" --notes-file docs/RELEASE_NOTES.md
+            gh release create v0.1.2-diagnostic1 artifacts/InstaPro-Patcher-release.apk artifacts/SHA256SUMS.txt docs/RELEASE_ARTIFACT.json docs/TEST_REPORT_TR.md --target "$GITHUB_SHA" --prerelease --title "v0.1.2 diagnostic — local startup error reporting" --notes-file docs/RELEASE_NOTES.md
           fi

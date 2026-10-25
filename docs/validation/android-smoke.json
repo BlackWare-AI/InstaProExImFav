@@ -1,0 +1,74 @@
+{
+  "sha256": "411688df3bce2620fef0ee264e1ba17aa8526e5b16246fb6d2f61fab736a2add",
+  "package": "dev.instapro.patcher",
+  "device": {
+    "ro.product.model": "Android SDK built for x86_64",
+    "ro.build.version.release": "11",
+    "ro.build.version.sdk": "30",
+    "ro.product.cpu.abilist": "x86_64,x86"
+  },
+  "launches": [
+    {
+      "start": "Starting: Intent { cmp=dev.instapro.patcher/.StartupActivity }\nStatus: ok\nLaunchState: COLD\nActivity: dev.instapro.patcher/.MainActivity\nTotalTime: 3248\nWaitTime: 3269\nComplete\n",
+      "samples": [
+        {
+          "pid": "3147",
+          "resumed": [
+            "mResumedActivity: ActivityRecord{c8261d8 u0 dev.instapro.patcher/.MainActivity t15}",
+            "ResumedActivity: ActivityRecord{c8261d8 u0 dev.instapro.patcher/.MainActivity t15}"
+          ]
+        },
+        {
+          "pid": "3147",
+          "resumed": [
+            "mResumedActivity: ActivityRecord{c8261d8 u0 dev.instapro.patcher/.MainActivity t15}",
+            "ResumedActivity: ActivityRecord{c8261d8 u0 dev.instapro.patcher/.MainActivity t15}"
+          ]
+        }
+      ]
+    },
+    {
+      "start": "Starting: Intent { cmp=dev.instapro.patcher/.StartupActivity }\nStatus: ok\nLaunchState: COLD\nActivity: dev.instapro.patcher/.MainActivity\nTotalTime: 2483\nWaitTime: 2490\nComplete\n",
+      "samples": [
+        {
+          "pid": "3200",
+          "resumed": [
+            "mResumedActivity: ActivityRecord{9895209 u0 dev.instapro.patcher/.MainActivity t16}",
+            "ResumedActivity: ActivityRecord{9895209 u0 dev.instapro.patcher/.MainActivity t16}"
+          ]
+        },
+        {
+          "pid": "3200",
+          "resumed": [
+            "mResumedActivity: ActivityRecord{9895209 u0 dev.instapro.patcher/.MainActivity t16}",
+            "ResumedActivity: ActivityRecord{9895209 u0 dev.instapro.patcher/.MainActivity t16}"
+          ]
+        }
+      ]
+    },
+    {
+      "start": "Starting: Intent { cmp=dev.instapro.patcher/.StartupActivity }\nStatus: ok\nLaunchState: COLD\nActivity: dev.instapro.patcher/.MainActivity\nTotalTime: 2649\nWaitTime: 2723\nComplete\n",
+      "samples": [
+        {
+          "pid": "3252",
+          "resumed": [
+            "mResumedActivity: ActivityRecord{2c72465 u0 dev.instapro.patcher/.MainActivity t17}",
+            "ResumedActivity: ActivityRecord{2c72465 u0 dev.instapro.patcher/.MainActivity t17}"
+          ]
+        },
+        {
+          "pid": "3252",
+          "resumed": [
+            "mResumedActivity: ActivityRecord{2c72465 u0 dev.instapro.patcher/.MainActivity t17}",
+            "ResumedActivity: ActivityRecord{2c72465 u0 dev.instapro.patcher/.MainActivity t17}"
+          ]
+        }
+      ]
+    }
+  ],
+  "installed_flags": [
+    "flags=[ HAS_CODE ALLOW_CLEAR_USER_DATA ]",
+    "pkgFlags=[ HAS_CODE ALLOW_CLEAR_USER_DATA ]"
+  ],
+  "status": "PASS: three release cold starts, process survival and resumed Activity; default form/preview; debuggable=false"
+}

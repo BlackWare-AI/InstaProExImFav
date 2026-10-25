@@ -26,7 +26,7 @@ public final class MainActivity extends Activity {
  EditText label,suffix;
  Button chooseButton,buildButton,keyButton,cancelButton;
  ProgressBar progress;
- boolean savePicker,resumed;
+ boolean savePicker,resumed,startupFailed;
  static final class Session {
   final Context app;final File dir,source,output;final ExecutorService worker=Executors.newSingleThreadExecutor();
   volatile boolean busy,ready,sourceVerified;volatile String message="Orijinal InstaPro 15.85 APK dosyasını seçin.";volatile Future<?> task;volatile Thread running;volatile boolean cancelRequested;WeakReference<MainActivity> view=new WeakReference<>(null);
@@ -37,6 +37,13 @@ public final class MainActivity extends Activity {
  interface Work {void run()throws Exception;}
  @Override public void onCreate(Bundle state) {
   super.onCreate(state);
+  try{initialize(state);}
+  catch(RuntimeException|LinkageError error){
+   startupFailed=true;
+   StartupActivity.showFailure(this,CrashReporter.record(this,error));
+  }
+ }
+ void initialize(Bundle state){
   if(session==null)session=new Session(this);
   session.view=new WeakReference<>(this);
   getWindow().setBackgroundDrawable(new ColorDrawable(Color.BLACK));
@@ -135,6 +142,7 @@ public final class MainActivity extends Activity {
  }
  void enabled(View view,boolean enabled){view.setEnabled(enabled);view.setAlpha(enabled?1f:0.45f);}
  void render(){
+  if(startupFailed||status==null)return;
   status.setText(session.message);
   sourceStatus.setText(session.sourceVerified?"✓ Orijinal InstaPro 15.85 doğrulandı":"Henüz doğrulanmış APK seçilmedi.");
   enabled(chooseButton,!session.busy);enabled(keyButton,!session.busy);
@@ -177,6 +185,6 @@ public final class MainActivity extends Activity {
  }
  @Override protected void onResume(){super.onResume();resumed=true;render();}
  @Override protected void onPause(){resumed=false;super.onPause();}
- @Override protected void onSaveInstanceState(Bundle out){super.onSaveInstanceState(out);out.putString("label",label.getText().toString());out.putString("suffix",suffix.getText().toString());out.putBoolean("savePicker",savePicker);}
- @Override protected void onDestroy(){if(session.view.get()==this)session.view.clear();super.onDestroy();}
+ @Override protected void onSaveInstanceState(Bundle out){super.onSaveInstanceState(out);if(startupFailed||label==null||suffix==null)return;out.putString("label",label.getText().toString());out.putString("suffix",suffix.getText().toString());out.putBoolean("savePicker",savePicker);}
+ @Override protected void onDestroy(){if(session!=null&&session.view.get()==this)session.view.clear();super.onDestroy();}
 }

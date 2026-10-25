@@ -1,0 +1,1 @@
+PASS local report persistence, recovery screen and copy (synthetic fault); release Activity startup; form controls; optional gpt/.gpt/blank suffix previews; viewport; debuggable=false. APK patch generation and InstaPro launch are NOT tested.

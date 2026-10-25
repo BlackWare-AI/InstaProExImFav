@@ -33,3 +33,25 @@ Telefon patcher’ında orijinal APK seçerek aynı akışı gerçekten çalış
 7. Patcher’da ekran döndürme, process death, düşük disk, dosya seçici iptali, 180.564.084 bayt kaynakla I/O, anahtar export/import ve iptal/yarım hedef temizliğini gerçek cihazda sınayın. Ani process death sonrasında otomatik yeniden patch yapılmaz; geçici dosyalar bir sonraki başlangıçta temizlenir. DB transaction çökmede rollback’e tabidir; bunun Android backend/native helper ile birlikte doğrulanması gerekir.
 
 Sonuç tablosunda her satır için cihaz/Android/ABI, aşama, hash, uygulanan senaryo ve log kanıtını belirtin. Derleme, imza, AXML/DEX analizi ve masaüstü SQLite ayrı başlıklardır.
+
+## Patcher’ın kendi açılışını test etme
+
+Bu test hedef InstaPro’dan bağımsızdır. Uygun, bağlı Android cihaz/emülatörde:
+
+```bash
+python tools/android_smoke.py --apk artifacts/InstaPro-Patcher-release.apk \
+  --serial emulator-5554 --out build/android-smoke
+```
+
+Üç soğuk açılış, gecikmeli PID/resumed MainActivity, varsayılan form ve kurulu debug bayrağı denetlenir. Crash kayıtları kendi süreç PID’lerine göre ayrılır. Ekran görüntüsü/UI XML’i ve gerçek APK hash’i kaydedilir. Gerçek telefonda yalnız ilgili kayıtları paylaşın.
+
+Derin UI/recovery instrumentation testi için yerel kalıcı dağıtım anahtarı gerekir (aynı sertifika; target debuggable=false):
+
+```bash
+python tools/build_android_tests.py
+adb -s emulator-5554 install -r build/Patcher-smoke-tests.apk
+adb -s emulator-5554 shell am instrument -w \
+  dev.instapro.patcher.smoke/dev.instapro.patcher.smoke.SmokeRunner
+```
+
+Recovery testinde `SMOKE_TEST_SYNTHETIC_FAILURE` yazılı sentetik hata saklanır ve panoya kopyalanması sınanır; dosya test bitiminde temizlenir. Bu marker gerçek kullanıcı çökmesi değildir.

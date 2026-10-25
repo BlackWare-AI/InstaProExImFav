@@ -2,11 +2,13 @@
 
 Telefonda çevrimdışı çalışan sade APK patcher. AMOLED siyah arayüz: kaynak APK seçimi, görünen ad, isteğe bağlı paket eki (varsayılan `.gpt`), **Modla ve kaydet**. Kullanıcı APK’si ve favorileri ağa gönderilmez; uygulama INTERNET izni istemez.
 
-**Durum: deneysel release adayı. Android üzerinde çalıştığı henüz doğrulanmadı. Önceki APK’nin açılış çökmesinin nedeni bilinmiyor.** İmzalı release, derleme ve masaüstü testleri Android açılış testi değildir. [Test raporu](docs/TEST_REPORT_TR.md).
+**Durum: 0.1.2 teşhis adayı.** Android 11 / API 30 / x86_64 emülatörde patcher açılışı ve form testleri geçti. Kullanıcının telefonundaki 0.1.1 açılış çökmesi burada yeniden üretilemedi; telefon kaydı olmadan nedeninin giderildiği söylenmiyor. Tam hedef InstaPro APK’sinin üretimi ve açılışı hâlâ test edilmedi. [Test raporu](docs/TEST_REPORT_TR.md).
 
-## 0.1.1 düzeltmesi
+## Açılış hatasının kaydını alma
 
-Ekran görüntüsündeki `gpt` girişinin reddedilmesi düzeltildi. Nokta isteğe bağlı; ek alanı da isteğe bağlı. Görünür alan etiketleri, canlı paket önizlemesi, doğrulanmış kaynak göstergesi ve işlem durumları eklendi. Pencere/kaydırma arka planı siyah ve ekran yüksekliğini doldurur. Modlama düğmesi kaynak APK doğrulanınca etkinleşir; İptal yalnız işlem sırasında görünür. 0.1.1 adayı aynı dağıtım anahtarı ve versionCode 2 ile önceki patcher’ın üzerine kurulabilir. Android’de bu yeni adayın UI ve tam modlama akışı henüz test edilmedi.
+0.1.2, aynı imzayla önceki patcher üzerine kurulan bir **teşhis sürümüdür**. Patcher’ı kaldırmayın; imza anahtarı özel alanda kalır. Java arayüz başlatma hatası yakalanırsa sade hata ekranı açılır. Başka bir yakalanmamış Java hatasında Android’in normal crash handler’ı korunur ve kayıt yerelde saklanır; sonraki açılışta hata ekranı gösterilir. **Hata kaydını kopyala** ile model, Android/API, ABI, patcher sürümü ve stack trace alınabilir. Kayıt otomatik gönderilmez; APK/JSON/anahtar içeriği toplanmaz. Native veya Application başlamadan oluşan hataların bu yöntemle kaydedileceği garanti edilmez.
+
+Normal formda paket eki isteğe bağlıdır: `gpt`/`.gpt` aynı sonucu verir, boş ek orijinal paketi korur. Kalıcı etiketler, paket önizlemesi, siyah zemin ve doğrulanmış kaynak/düğme durumları korunur. Android test kaynakları `android-tests/` altında, komutlar `docs/ANDROID_TEST_TR.md` içindedir.
 
 ## Kapsam
 
@@ -50,7 +52,7 @@ export PATCHER_RELEASE_ALIAS=patcher-release
 python tools/sign_release.py
 ```
 
-Yalnız ilk yerel dağıtım kimliğini oluşturmak için `python tools/sign_release.py --init-local-identity` kullanılır. Varsayılan konum `/workspace/shared/instapro-release/`; dosyaları güvenli saklayın. Anahtar yokken olağan imza komutu sessizce başka kimlik üretmez. CI, `PATCHER_RELEASE_KEYSTORE_B64` ve `PATCHER_RELEASE_PASSWORD` secrets yapılandırılırsa aynı anahtarla imzalar; aksi halde yalnız unsigned release artifact üretir. Secrets bu oturumda depoya kurulmadı.
+Yalnız ilk yerel dağıtım kimliğini oluşturmak için `python tools/sign_release.py --init-local-identity` kullanılır. Varsayılan konum `/workspace/shared/instapro-release/`; dosyaları güvenli saklayın. Anahtar yokken olağan imza komutu sessizce başka kimlik üretmez. CI kaynakları release olarak derler, host testlerini çalıştırır ve depodaki imzalı APK’yi Android emülatöründe üç kez soğuk açar. Yayımlama bu iki işin geçmesini gerektirir. Dağıtım imzası yerelde kalıcı anahtarla uygulanır; özel anahtar CI’ye veya repoya eklenmez.
 
 Orijinal kanıtlar yerelde mevcutsa ek statik test:
 
