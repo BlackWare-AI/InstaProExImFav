@@ -1,0 +1,39 @@
+{
+  "ro.product.model": {
+    "returncode": 0,
+    "stdout": "Android SDK built for x86_64\n",
+    "stderr": ""
+  },
+  "ro.build.version.release": {
+    "returncode": 0,
+    "stdout": "11\n",
+    "stderr": ""
+  },
+  "ro.build.version.sdk": {
+    "returncode": 0,
+    "stdout": "30\n",
+    "stderr": ""
+  },
+  "ro.product.cpu.abilist": {
+    "returncode": 0,
+    "stdout": "x86_64,x86\n",
+    "stderr": ""
+  },
+  "install": {
+    "returncode": 0,
+    "stdout": "Performing Streamed Install\nSuccess\n",
+    "stderr": ""
+  },
+  "start": {
+    "returncode": 0,
+    "stdout": "Starting: Intent { cmp=dev.instapro.patcher/.MainActivity }\nStatus: ok\nLaunchState: COLD\nActivity: dev.instapro.patcher/.MainActivity\nTotalTime: 4628\nWaitTime: 4692\nComplete\n",
+    "stderr": ""
+  },
+  "pid": {
+    "returncode": 0,
+    "stdout": "2615\n",
+    "stderr": ""
+  },
+  "sha256": "7704163273d62031d76babae2fd7c262e9ea1a1849385c0a04753884c77cf96e",
+  "observed_patcher_crash_buffer": "empty"
+}

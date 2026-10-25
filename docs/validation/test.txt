@@ -1,0 +1,35 @@
+warning: [options] bootstrap class path not set in conjunction with -source 8
+warning: [options] source value 8 is obsolete and will be removed in a future release
+warning: [options] target value 8 is obsolete and will be removed in a future release
+warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.
+4 warnings
+PASS suffix regression: gpt/.gpt equivalent; blank/whitespace keep original package; malformed suffixes rejected
+PASS evidence hash/size checks
+warning: [options] bootstrap class path not set in conjunction with -source 8
+warning: [options] source value 8 is obsolete and will be removed in a future release
+warning: [options] target value 8 is obsolete and will be removed in a future release
+warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.
+4 warnings
+PASS independent apksig AXML parser: 734 component names, new Activity, debug=false
+PASS independent apksig AXML parser: 734 component names, new Activity, debug=false
+PASS empty suffix: original package, authorities, permission references and process/task identities preserved
+PASS ARSC fixed package field only; packed resources preserved
+PASS DEX: exactly two native init methods replaced; original click/lifecycle preserved; GOLD stub excluded
+PASS diagnostic DEX stages: Activity payload without hooks, then exactly one hook
+PASS signing identity persistence, password-protected portable roundtrip, wrong-password safety
+ALL CORE TESTS PASSED (host only, no Android launch)
+warning: [options] bootstrap class path not set in conjunction with -source 8
+warning: [options] source value 8 is obsolete and will be removed in a future release
+warning: [options] target value 8 is obsolete and will be removed in a future release
+warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.
+4 warnings
+SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+PASS SYNTHETIC workload → SQLite: 16932 users / 8 folders / 17615 memberships
+PASS repeated merge: no duplicate users or memberships
+PASS SQLite → export JSON → parse → fresh SQLite, all fields and memberships preserved
+PASS backup failure and mid-import write failure: original database preserved
+PASS empty folders, Unicode/quotes, metadata, case deduplication, replace and merge
+PASS malformed and unrelated JSON rejected
+ALL TESTS PASSED (host JVM and SQLite; Android UI/device launch not tested)

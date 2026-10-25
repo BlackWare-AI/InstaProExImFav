@@ -1,0 +1,12 @@
+.cache
+build/
+__pycache__/
+*.p12
+*.jks
+*.keystore
+*password*
+*.apk
+*.log
+local-evidence/
+crash-logs/
+!artifacts/InstaPro-Patcher-release.apk
