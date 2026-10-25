@@ -1,0 +1,49 @@
+name: Release build and host checks
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python tools/build.py
+      - run: python tools/test.py --host-only
+      - name: Upload unsigned release and host report inputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: unsigned-release-no-android-validation
+          path: |
+            build/patcher-unsigned.apk
+            build/payloaddex/classes.dex
+      - name: Sign with persistent release identity when configured
+        env:
+          KEY_B64: ${{ secrets.PATCHER_RELEASE_KEYSTORE_B64 }}
+          KEY_PASS: ${{ secrets.PATCHER_RELEASE_PASSWORD }}
+          PATCHER_RELEASE_ALIAS: patcher-release
+        shell: bash
+        run: |
+          if [ -n "$KEY_B64" ] && [ -n "$KEY_PASS" ]; then
+            umask 077
+            export PATCHER_RELEASE_KEYSTORE="$RUNNER_TEMP/release.p12"
+            export PATCHER_RELEASE_PASSWORD_FILE="$RUNNER_TEMP/release-password"
+            printf '%s' "$KEY_B64" | base64 --decode > "$PATCHER_RELEASE_KEYSTORE"
+            printf '%s' "$KEY_PASS" > "$PATCHER_RELEASE_PASSWORD_FILE"
+            python tools/sign_release.py
+            rm -f "$PATCHER_RELEASE_KEYSTORE" "$PATCHER_RELEASE_PASSWORD_FILE"
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: signed-release-if-identity-configured
+          path: build/InstaPro-Patcher-release.apk
+          if-no-files-found: ignore

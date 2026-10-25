@@ -1,0 +1,11 @@
+{
+  "name": "InstaPro-Patcher-release.apk",
+  "bytes": 1212767,
+  "sha256": "745738d68dfee50bfbbbdedad4abb0d0d85287fa25f78d17714baab89396c7e7",
+  "certificate_sha256": "45dc5680343667bed714d6810cd793e4a234b8bfbc211c980893256f52e019aa",
+  "debuggable": false,
+  "build": "release",
+  "android_runtime_tested": false,
+  "target_instapro_apk_generated": false,
+  "source_apk_available": false
+}

@@ -1,0 +1,7 @@
+database: favorites.db
+pages: CREATE TABLE favorite_pages (id INTEGER PRIMARY KEY AUTOINCREMENT, pageName TEXT, username TEXT, profilePicUrl TEXT, bio TEXT, createdAt INTEGER NOT NULL DEFAULT 0)
+categories: CREATE TABLE favorite_categories (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE)
+memberships: CREATE TABLE favorite_page_categories (pageId INTEGER NOT NULL, categoryId INTEGER NOT NULL, PRIMARY KEY (pageId, categoryId))
+seed: Favorites
+Inventory: 43772 entries, 297878696 uncompressed bytes
+Evidence contains no runtime crash logs. Startup crash cause remains UNKNOWN.
